@@ -1,20 +1,17 @@
-# database.py
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
 
-load_dotenv()  # Load .env file
+# Environment variables for Render or Railway
+MYSQL_USER = os.environ.get("MYSQL_USER", "root")
+MYSQL_PASSWORD = os.environ.get("MYSQL_PASSWORD", "OxlvxnNzxEsnhhqBMAgurtxZnNSEctru")
+MYSQL_HOST = os.environ.get("MYSQL_HOST", "maglev.proxy.rlwy.net")
+MYSQL_DB = os.environ.get("MYSQL_DB", "railway")
+MYSQL_PORT = os.environ.get("MYSQL_PORT", "27275")
 
-USER = os.getenv("MYSQL_USER")
-PASSWORD = os.getenv("MYSQL_PASSWORD")
-HOST = os.getenv("MYSQL_HOST")
-DB_NAME = os.getenv("MYSQL_DB")
-PORT = os.getenv("MYSQL_PORT")
+SQLALCHEMY_DATABASE_URL = f"mysql+pymysql://{MYSQL_USER}:{MYSQL_PASSWORD}@{MYSQL_HOST}:{MYSQL_PORT}/{MYSQL_DB}"
 
-DATABASE_URL = f"mysql+pymysql://{USER}:{PASSWORD}@{HOST}:{PORT}/{DB_NAME}?charset=utf8mb4"
-
-engine = create_engine(DATABASE_URL, pool_pre_ping=True)
+engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

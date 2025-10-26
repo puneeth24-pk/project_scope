@@ -1,40 +1,23 @@
 # schemas.py
 from pydantic import BaseModel
-from typing import Optional
 
-class ProjectCreate(BaseModel):
+class ProjectBase(BaseModel):
     project_name: str
-    idea: Optional[str] = None
-    team_members: Optional[str] = None
-    roll_number: Optional[str] = None
-    class_name: Optional[str] = None
-    year: Optional[str] = None
-    branch: Optional[str] = None
-    section: Optional[str] = None
-    tools: Optional[str] = None
+    idea: str
+    team_members: str | None = None
+    roll_number: str | None = None
+    class_name: str | None = None
+    year: int | None = None
+    branch: str | None = None
+    sec: str | None = None
+    tools: str | None = None
+    technologies: str | None = None
 
-class ProjectUpdate(BaseModel):
-    project_name: Optional[str]
-    idea: Optional[str]
-    team_members: Optional[str]
-    roll_number: Optional[str]
-    class_name: Optional[str]
-    year: Optional[str]
-    branch: Optional[str]
-    section: Optional[str]
-    tools: Optional[str]
+class ProjectCreate(ProjectBase):
+    pass
 
-class ProjectOut(BaseModel):
+class Project(ProjectBase):
     id: int
-    project_name: str
-    idea: Optional[str] = None
-    team_members: Optional[str] = None
-    roll_number: Optional[str] = None
-    class_name: Optional[str] = None
-    year: Optional[str] = None
-    branch: Optional[str] = None
-    section: Optional[str] = None
-    tools: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # Pydantic v2 replacement for orm_mode

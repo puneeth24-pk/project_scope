@@ -1,5 +1,5 @@
 # models.py
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String
 from database import Base
 
 class Project(Base):
@@ -7,11 +7,12 @@ class Project(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     project_name = Column(String(255), nullable=False)
-    idea = Column(Text, nullable=True)
-    team_members = Column(String(255), nullable=True)
-    roll_number = Column(String(255), nullable=True)
-    class_name = Column(String(100), nullable=True)
-    year = Column(String(50), nullable=True)
-    branch = Column(String(100), nullable=True)
-    section = Column(String(50), nullable=True)
-    tools = Column(String(255), nullable=True)
+    idea = Column(String(500), nullable=False)
+    team_members = Column(String(255))
+    roll_number = Column(String(50))
+    class_name = Column(String(50))
+    year = Column(Integer)
+    branch = Column(String(100))
+    sec = Column(String(50))
+    tools = Column(String(255))
+    technologies = Column(String(255))

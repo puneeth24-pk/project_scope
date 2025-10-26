@@ -1,27 +1,15 @@
 # main.py
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from typing import List
-
-from database import SessionLocal, engine, Base
 import models, schemas
+from database import SessionLocal, engine, Base
 
-# Create tables automatically
+# Create tables
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Project Submission API")
+app = FastAPI(title="Project Scope Backend")
 
-# CORS for Streamlit access
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # For production, replace "*" with your Streamlit URL
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-# DB session dependency
+# Dependency to get DB session
 def get_db():
     db = SessionLocal()
     try:
@@ -29,8 +17,8 @@ def get_db():
     finally:
         db.close()
 
-# CREATE project
-@app.post("/projects/", response_model=schemas.ProjectOut)
+# CREATE: Add new project
+@app.post("/projects/", response_model=schemas.Project)
 def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)):
     db_project = models.Project(**project.dict())
     db.add(db_project)
@@ -38,33 +26,32 @@ def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)
     db.refresh(db_project)
     return db_project
 
-# READ all projects
-@app.get("/projects/", response_model=List[schemas.ProjectOut])
-def read_projects(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    projects = db.query(models.Project).offset(skip).limit(limit).all()
-    return projects
+# READ: Get all projects
+@app.get("/projects/", response_model=list[schemas.Project])
+def get_projects(db: Session = Depends(get_db)):
+    return db.query(models.Project).all()
 
-# READ single project
-@app.get("/projects/{project_id}", response_model=schemas.ProjectOut)
-def read_project(project_id: int, db: Session = Depends(get_db)):
+# READ: Get a project by ID
+@app.get("/projects/{project_id}", response_model=schemas.Project)
+def get_project(project_id: int, db: Session = Depends(get_db)):
     project = db.query(models.Project).filter(models.Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     return project
 
-# UPDATE project
-@app.put("/projects/{project_id}", response_model=schemas.ProjectOut)
-def update_project(project_id: int, project_update: schemas.ProjectUpdate, db: Session = Depends(get_db)):
+# UPDATE: Update a project by ID
+@app.put("/projects/{project_id}", response_model=schemas.Project)
+def update_project(project_id: int, updated_project: schemas.ProjectCreate, db: Session = Depends(get_db)):
     project = db.query(models.Project).filter(models.Project.id == project_id).first()
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
-    for key, value in project_update.dict(exclude_unset=True).items():
+    for key, value in updated_project.dict().items():
         setattr(project, key, value)
     db.commit()
     db.refresh(project)
     return project
 
-# DELETE project
+# DELETE: Delete a project by ID
 @app.delete("/projects/{project_id}")
 def delete_project(project_id: int, db: Session = Depends(get_db)):
     project = db.query(models.Project).filter(models.Project.id == project_id).first()
@@ -72,4 +59,4 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Project not found")
     db.delete(project)
     db.commit()
-    return {"detail": "Project deleted"}
+    return {"detail": "Project deleted successfully"}
