@@ -1,0 +1,6 @@
+# Ignore environment files and caches
+.venv/
+__pycache__/
+*.pyc
+.env
+.idea/
