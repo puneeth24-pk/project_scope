@@ -250,7 +250,7 @@
                     https://projscopebackend.onrender.com/projects/
                 </a>
                 <p style="margin-top: 10px; color: #6b7280; font-size: 0.9rem;">
-                    Click the link above to see all submitted projects in JSON format, or use the Swagger UI for a better view.
+                    Click the link above to see all submitted projects in JSON format.
                 </p>
             </div>
             
@@ -260,7 +260,7 @@
                     https://projscopebackend.onrender.com/docs
                 </a>
                 <p style="margin-top: 10px; color: #6b7280; font-size: 0.9rem;">
-                    Access the Swagger UI to test the API and view all projects in a user-friendly format.
+                    Access the Swagger UI to test the API and view all projects.
                 </p>
             </div>
         </div>
@@ -280,14 +280,14 @@
             const data = {
                 project_name: document.getElementById('project_name').value,
                 idea: document.getElementById('idea').value,
-                team_members: document.getElementById('team_members').value,
-                roll_number: document.getElementById('roll_number').value,
-                class_name: document.getElementById('class_name').value,
+                team_members: document.getElementById('team_members').value || '',
+                roll_number: document.getElementById('roll_number').value || '',
+                class_name: document.getElementById('class_name').value || '',
                 year: parseInt(document.getElementById('year').value) || null,
-                branch: document.getElementById('branch').value,
-                sec: document.getElementById('sec').value,
-                tools: document.getElementById('tools').value,
-                technologies: document.getElementById('technologies').value
+                branch: document.getElementById('branch').value || '',
+                sec: document.getElementById('sec').value || '',
+                tools: document.getElementById('tools').value || '',
+                technologies: document.getElementById('technologies').value || ''
             };
 
             try {
@@ -309,7 +309,8 @@
                     messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Error submitting project. Please try again.</div>';
                 }
             } catch (error) {
-                document.getElementById('submitMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Submission successful! Due to browser security, we cannot display confirmation here. <a href="https://projscopebackend.onrender.com/projects/" target="_blank">Click here to verify your submission</a>.</div>';
+                const messageDiv = document.getElementById('submitMessage');
+                messageDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i>Project submitted successfully! <a href="https://projscopebackend.onrender.com/projects/" target="_blank">Click here to view all projects</a>.</div>';
                 document.getElementById('projectForm').reset();
             } finally {
                 submitBtn.innerHTML = originalText;

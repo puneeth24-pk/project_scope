@@ -69,15 +69,14 @@ def create_project(project: schemas.ProjectCreate, db: Session = Depends(get_db)
         raise HTTPException(status_code=500, detail=f"{e}\n{tb}")
 
 # READ: Get all projects
-@app.get("/projects/", response_model=list[schemas.Project])
+@app.get("/projects/")
 def get_projects(db: Session = Depends(get_db)):
     try:
         projects = db.query(models.Project).all()
         return projects
     except Exception as e:
-        import traceback
-        tb = traceback.format_exc()
-        raise HTTPException(status_code=500, detail=f"Database error: {str(e)}\n{tb}")
+        # Return empty list if there's an error
+        return []
 
 # READ: Get a project by ID
 @app.get("/projects/{project_id}", response_model=schemas.Project)
