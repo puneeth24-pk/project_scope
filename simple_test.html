@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Testing API Connection</h1>
+    <button onclick="testAPI()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                // Test POST (create project)
+                const response = await fetch('https://projscopebackend.onrender.com/projects/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        project_name: 'Test Project',
+                        idea: 'Test idea'
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    result.innerHTML = 'SUCCESS: Created project with ID ' + data.id;
+                } else {
+                    result.innerHTML = 'ERROR: ' + response.status;
+                }
+            } catch (error) {
+                result.innerHTML = 'NETWORK ERROR: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

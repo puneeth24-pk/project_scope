@@ -482,26 +482,48 @@
         }
 
         async function loadDashboard() {
+            const recentList = document.getElementById('recentProjectsList');
+            recentList.innerHTML = '<div class="loading" style="margin: 20px auto;"></div>';
+            
             try {
-                const response = await fetch(API_URL);
+                // First try to wake up the server with a simple request
+                console.log('Connecting to server...');
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                console.log('Response status:', response.status);
+                
                 if (response.ok) {
                     const projects = await response.json();
+                    console.log('Projects loaded:', projects.length);
                     
                     document.getElementById('totalProjects').textContent = projects.length;
                     document.getElementById('recentProjects').textContent = Math.min(projects.length, 5);
                     
-                    const recentList = document.getElementById('recentProjectsList');
                     if (projects.length > 0) {
                         const recent = projects.slice(-3);
                         recentList.innerHTML = '<h3 style="color: var(--primary-blue); margin-bottom: 20px;"><i class="fas fa-clock"></i> Recent Projects</h3><div class="project-grid">' + recent.map(function(proj) { return createProjectCard(proj, true); }).join('') + '</div>';
                     } else {
                         recentList.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i>No projects submitted yet. Click "Submit Project" to get started!</div>';
                     }
+                } else if (response.status === 500) {
+                    // Server is up but has internal error - still allow submissions
+                    document.getElementById('totalProjects').textContent = '?';
+                    document.getElementById('recentProjects').textContent = '?';
+                    recentList.innerHTML = '<div class="alert alert-info"><i class="fas fa-server"></i>Server is starting up. You can still submit projects!</div>';
                 } else {
-                    document.getElementById('recentProjectsList').innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i>Server error. Please try again later.</div>';
+                    recentList.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i>Server error (' + response.status + '). Please try again in a moment.</div>';
                 }
             } catch (error) {
-                document.getElementById('recentProjectsList').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Cannot connect to server. Please check your internet connection.</div>';
+                console.error('Connection error:', error);
+                document.getElementById('totalProjects').textContent = '?';
+                document.getElementById('recentProjects').textContent = '?';
+                recentList.innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Server is starting up (this may take 30-60 seconds). <button onclick="loadDashboard()" class="btn btn-secondary" style="margin-left: 10px;">Retry</button></div>';
             }
         }
 
@@ -532,23 +554,34 @@
             };
 
             try {
+                console.log('Submitting project:', data.project_name);
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify(data)
                 });
 
+                console.log('Submit response status:', response.status);
                 const messageDiv = document.getElementById('submitMessage');
+                
                 if (response.ok) {
                     messageDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i>Project submitted successfully! View it in the dashboard.</div>';
                     document.getElementById('projectForm').reset();
-                    loadDashboard();
+                    setTimeout(function() { loadDashboard(); }, 1000);
                 } else {
-                    const error = await response.json();
-                    messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Error: ' + (error.detail || 'Failed to submit project') + '</div>';
+                    try {
+                        const error = await response.json();
+                        messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Error: ' + (error.detail || 'Failed to submit project') + '</div>';
+                    } catch (e) {
+                        messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Server error (' + response.status + '). Please try again.</div>';
+                    }
                 }
             } catch (error) {
-                document.getElementById('submitMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Network error. Please check your connection.</div>';
+                console.error('Submit error:', error);
+                document.getElementById('submitMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Connection failed. Server may be starting up - please wait 30 seconds and try again.</div>';
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
