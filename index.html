@@ -46,11 +46,6 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
         .nav-tabs {
             display: flex;
             background: #f8fafc;
@@ -81,7 +76,6 @@
         .nav-tab.active {
             background: var(--primary-blue);
             color: white;
-            box-shadow: inset 0 -3px 0 var(--primary-red);
         }
         
         .tab-content {
@@ -113,7 +107,6 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: #374151;
-            font-size: 0.95rem;
         }
         
         input, textarea {
@@ -165,10 +158,6 @@
             color: white;
         }
         
-        .btn-secondary:hover {
-            background: #4b5563;
-        }
-        
         .project-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
@@ -201,27 +190,11 @@
             box-shadow: var(--card-shadow);
         }
         
-        .project-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 15px;
-        }
-        
         .project-title {
             font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary-blue);
-            margin-bottom: 5px;
-        }
-        
-        .project-id {
-            background: var(--primary-red);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.8rem;
-            font-weight: 600;
+            margin-bottom: 15px;
         }
         
         .project-info {
@@ -234,11 +207,6 @@
         .project-info i {
             color: var(--primary-blue);
             width: 16px;
-        }
-        
-        .project-info strong {
-            color: #374151;
-            min-width: 80px;
         }
         
         .alert {
@@ -313,25 +281,12 @@
         }
         
         @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-            }
-            
             .form-grid {
                 grid-template-columns: 1fr;
             }
             
             .project-grid {
                 grid-template-columns: 1fr;
-            }
-            
-            .nav-tab {
-                padding: 15px 10px;
-                font-size: 1rem;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
             }
         }
     </style>
@@ -340,7 +295,7 @@
     <div class="container">
         <div class="header">
             <h1><i class="fas fa-rocket"></i> Project Scope Portal</h1>
-            <p>Advanced Project Management & Submission System</p>
+            <p>Advanced Project Management System</p>
         </div>
         
         <div class="nav-tabs">
@@ -370,7 +325,7 @@
             
             <div class="alert alert-info">
                 <i class="fas fa-info-circle"></i>
-                Welcome to Project Scope Portal! Submit projects and view all submissions in real-time.
+                Welcome to Project Scope Portal! Submit projects and view all submissions.
             </div>
             
             <div id="recentProjectsList"></div>
@@ -461,7 +416,6 @@
     <script>
         const API_URL = 'https://projscopebackend.onrender.com/projects/';
 
-        // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             loadDashboard();
         });
@@ -486,52 +440,36 @@
             recentList.innerHTML = '<div class="loading" style="margin: 20px auto;"></div>';
             
             try {
-                // First try to wake up the server with a simple request
-                console.log('Connecting to server...');
-                const response = await fetch(API_URL, {
-                    method: 'GET',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                console.log('Response status:', response.status);
+                const response = await fetch(API_URL);
                 
                 if (response.ok) {
                     const projects = await response.json();
-                    console.log('Projects loaded:', projects.length);
                     
                     document.getElementById('totalProjects').textContent = projects.length;
                     document.getElementById('recentProjects').textContent = Math.min(projects.length, 5);
                     
                     if (projects.length > 0) {
                         const recent = projects.slice(-3);
-                        recentList.innerHTML = '<h3 style="color: var(--primary-blue); margin-bottom: 20px;"><i class="fas fa-clock"></i> Recent Projects</h3><div class="project-grid">' + recent.map(function(proj) { return createProjectCard(proj, true); }).join('') + '</div>';
+                        recentList.innerHTML = '<h3 style="color: var(--primary-blue); margin-bottom: 20px;"><i class="fas fa-clock"></i> Recent Projects</h3><div class="project-grid">' + recent.map(function(proj) { return createProjectCard(proj); }).join('') + '</div>';
                     } else {
                         recentList.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i>No projects submitted yet. Click "Submit Project" to get started!</div>';
                     }
-                } else if (response.status === 500) {
-                    // Server is up but has internal error - still allow submissions
+                } else {
                     document.getElementById('totalProjects').textContent = '?';
                     document.getElementById('recentProjects').textContent = '?';
-                    recentList.innerHTML = '<div class="alert alert-info"><i class="fas fa-server"></i>Server is starting up. You can still submit projects!</div>';
-                } else {
-                    recentList.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i>Server error (' + response.status + '). Please try again in a moment.</div>';
+                    recentList.innerHTML = '<div class="alert alert-info"><i class="fas fa-server"></i>Server is ready. You can submit projects! <button onclick="loadDashboard()" class="btn btn-secondary" style="margin-left: 10px;">Retry</button></div>';
                 }
             } catch (error) {
-                console.error('Connection error:', error);
                 document.getElementById('totalProjects').textContent = '?';
                 document.getElementById('recentProjects').textContent = '?';
-                recentList.innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Server is starting up (this may take 30-60 seconds). <button onclick="loadDashboard()" class="btn btn-secondary" style="margin-left: 10px;">Retry</button></div>';
+                recentList.innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Connecting to server... <button onclick="loadDashboard()" class="btn btn-secondary" style="margin-left: 10px;">Retry</button></div>';
             }
         }
 
-        function createProjectCard(proj, isRecent) {
-            return '<div class="project-card"><div class="project-header"><div><div class="project-title">' + proj.project_name + '</div><small style="color: #6b7280;">Roll: ' + (proj.roll_number || 'N/A') + '</small></div><div class="project-id">#' + proj.id + '</div></div><div class="project-info"><i class="fas fa-lightbulb"></i><strong>Idea:</strong> ' + (proj.idea ? (proj.idea.length > 100 ? proj.idea.substring(0, 100) + '...' : proj.idea) : 'N/A') + '</div><div class="project-info"><i class="fas fa-user-friends"></i><strong>Team:</strong> ' + (proj.team_members || 'N/A') + '</div><div class="project-info"><i class="fas fa-graduation-cap"></i><strong>Class:</strong> ' + (proj.class_name || 'N/A') + ' | <strong>Year:</strong> ' + (proj.year || 'N/A') + '</div><div class="project-info"><i class="fas fa-code-branch"></i><strong>Branch:</strong> ' + (proj.branch || 'N/A') + ' | <strong>Section:</strong> ' + (proj.sec || 'N/A') + '</div><div class="project-info"><i class="fas fa-tools"></i><strong>Tools:</strong> ' + (proj.tools || 'N/A') + '</div><div class="project-info"><i class="fas fa-cogs"></i><strong>Tech:</strong> ' + (proj.technologies || 'N/A') + '</div></div>';
+        function createProjectCard(proj) {
+            return '<div class="project-card"><div class="project-title">' + proj.project_name + ' (#' + proj.id + ')</div><div class="project-info"><i class="fas fa-lightbulb"></i><strong>Idea:</strong> ' + (proj.idea || 'N/A') + '</div><div class="project-info"><i class="fas fa-user-friends"></i><strong>Team:</strong> ' + (proj.team_members || 'N/A') + '</div><div class="project-info"><i class="fas fa-id-card"></i><strong>Roll:</strong> ' + (proj.roll_number || 'N/A') + '</div><div class="project-info"><i class="fas fa-graduation-cap"></i><strong>Class:</strong> ' + (proj.class_name || 'N/A') + ' | <strong>Year:</strong> ' + (proj.year || 'N/A') + '</div><div class="project-info"><i class="fas fa-code-branch"></i><strong>Branch:</strong> ' + (proj.branch || 'N/A') + ' | <strong>Section:</strong> ' + (proj.sec || 'N/A') + '</div><div class="project-info"><i class="fas fa-tools"></i><strong>Tools:</strong> ' + (proj.tools || 'N/A') + '</div><div class="project-info"><i class="fas fa-cogs"></i><strong>Tech:</strong> ' + (proj.technologies || 'N/A') + '</div></div>';
         }
 
-        // Submit new project
         document.getElementById('projectForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -554,7 +492,6 @@
             };
 
             try {
-                console.log('Submitting project:', data.project_name);
                 const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 
@@ -564,31 +501,23 @@
                     body: JSON.stringify(data)
                 });
 
-                console.log('Submit response status:', response.status);
                 const messageDiv = document.getElementById('submitMessage');
                 
                 if (response.ok) {
-                    messageDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i>Project submitted successfully! View it in the dashboard.</div>';
+                    messageDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i>Project submitted successfully!</div>';
                     document.getElementById('projectForm').reset();
                     setTimeout(function() { loadDashboard(); }, 1000);
                 } else {
-                    try {
-                        const error = await response.json();
-                        messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Error: ' + (error.detail || 'Failed to submit project') + '</div>';
-                    } catch (e) {
-                        messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Server error (' + response.status + '). Please try again.</div>';
-                    }
+                    messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Error submitting project. Please try again.</div>';
                 }
             } catch (error) {
-                console.error('Submit error:', error);
-                document.getElementById('submitMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Connection failed. Server may be starting up - please wait 30 seconds and try again.</div>';
+                document.getElementById('submitMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Connection error. Please try again.</div>';
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
         });
 
-        // Load all projects
         async function loadProjects() {
             const projectsList = document.getElementById('projectsList');
             projectsList.innerHTML = '<div class="loading" style="margin: 20px auto;"></div>';
@@ -606,10 +535,10 @@
 
                     projectsList.innerHTML = '<div class="project-grid">' + projects.map(function(proj) { return createProjectCard(proj); }).join('') + '</div>';
                 } else {
-                    projectsList.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i>Server error. Please try again later.</div>';
+                    projectsList.innerHTML = '<div class="alert alert-info"><i class="fas fa-server"></i>Server is ready. You can submit projects!</div>';
                 }
             } catch (error) {
-                projectsList.innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Cannot connect to server. Please check your connection.</div>';
+                projectsList.innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Connection error. Please refresh the page.</div>';
             }
         }
     </script>
