@@ -9,10 +9,6 @@
         :root {
             --primary-blue: #1e40af;
             --primary-red: #dc2626;
-            --light-blue: #3b82f6;
-            --light-red: #ef4444;
-            --dark-blue: #1e3a8a;
-            --dark-red: #b91c1c;
             --gradient-bg: linear-gradient(135deg, #1e40af 0%, #dc2626 100%);
             --card-shadow: 0 10px 25px rgba(0,0,0,0.1);
             --border-radius: 12px;
@@ -120,7 +116,7 @@
             font-size: 0.95rem;
         }
         
-        input, textarea, select {
+        input, textarea {
             width: 100%;
             padding: 12px 16px;
             border: 2px solid #e5e7eb;
@@ -130,7 +126,7 @@
             background: white;
         }
         
-        input:focus, textarea:focus, select:focus {
+        input:focus, textarea:focus {
             outline: none;
             border-color: var(--primary-blue);
             box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
@@ -152,7 +148,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            text-decoration: none;
         }
         
         .btn-primary {
@@ -161,20 +156,8 @@
         }
         
         .btn-primary:hover {
-            background: var(--dark-blue);
+            background: #1e3a8a;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(30, 64, 175, 0.3);
-        }
-        
-        .btn-danger {
-            background: var(--primary-red);
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: var(--dark-red);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.3);
         }
         
         .btn-secondary {
@@ -184,11 +167,6 @@
         
         .btn-secondary:hover {
             background: #4b5563;
-        }
-        
-        .btn-sm {
-            padding: 8px 16px;
-            font-size: 0.9rem;
         }
         
         .project-grid {
@@ -263,14 +241,6 @@
             min-width: 80px;
         }
         
-        .project-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid #e5e7eb;
-        }
-        
         .alert {
             padding: 15px 20px;
             border-radius: 8px;
@@ -312,130 +282,6 @@
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-        
-        .modal-content {
-            background: white;
-            margin: 5% auto;
-            padding: 30px;
-            border-radius: var(--border-radius);
-            width: 90%;
-            max-width: 600px;
-            box-shadow: var(--card-shadow);
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        
-        .close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-            padding: 5px;
-        }
-        
-        .close:hover {
-            color: var(--primary-red);
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: var(--border-radius);
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            text-align: center;
-            border-left: 4px solid var(--primary-blue);
-        }
-        
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        
-        .stat-label {
-            color: #6b7280;
-            font-weight: 500;
-            margin-top: 5px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .project-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .nav-tab {
-                padding: 15px 10px;
-                font-size: 1rem;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e5e7eb;
-        }
-        
-        .modal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary-blue);
-        }
-        
-        .close {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
-            color: #6b7280;
-            padding: 5px;
-        }
-        
-        .close:hover {
-            color: var(--primary-red);
         }
         
         .stats-grid {
@@ -532,57 +378,59 @@
 
         <!-- Submit Project Tab -->
         <div id="submit" class="tab-content">
-            <h2 style="margin-bottom: 25px; color: var(--primary-blue);"><i class="fas fa-plus-circle"></i> Submit New Project</h2>
+            <h2 style="margin-bottom: 25px; color: var(--primary-blue);">
+                <i class="fas fa-plus-circle"></i> Submit New Project
+            </h2>
             
             <form id="projectForm">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="project_name"><i class="fas fa-project-diagram"></i> Project Name *</label>
+                        <label for="project_name">Project Name *</label>
                         <input type="text" id="project_name" required placeholder="Enter project name">
                     </div>
                     
                     <div class="form-group">
-                        <label for="roll_number"><i class="fas fa-id-card"></i> Roll Number</label>
+                        <label for="roll_number">Roll Number</label>
                         <input type="text" id="roll_number" placeholder="Enter roll number">
                     </div>
                     
                     <div class="form-group">
-                        <label for="class_name"><i class="fas fa-graduation-cap"></i> Class</label>
+                        <label for="class_name">Class</label>
                         <input type="text" id="class_name" placeholder="Enter class">
                     </div>
                     
                     <div class="form-group">
-                        <label for="year"><i class="fas fa-calendar"></i> Year</label>
+                        <label for="year">Year</label>
                         <input type="number" id="year" min="1" max="10" placeholder="Enter year">
                     </div>
                     
                     <div class="form-group">
-                        <label for="branch"><i class="fas fa-code-branch"></i> Branch</label>
+                        <label for="branch">Branch</label>
                         <input type="text" id="branch" placeholder="Enter branch">
                     </div>
                     
                     <div class="form-group">
-                        <label for="sec"><i class="fas fa-users"></i> Section</label>
+                        <label for="sec">Section</label>
                         <input type="text" id="sec" placeholder="Enter section">
                     </div>
                     
                     <div class="form-group full-width">
-                        <label for="idea"><i class="fas fa-lightbulb"></i> Project Idea *</label>
-                        <textarea id="idea" required placeholder="Describe your project idea in detail..."></textarea>
+                        <label for="idea">Project Idea *</label>
+                        <textarea id="idea" required placeholder="Describe your project idea..."></textarea>
                     </div>
                     
                     <div class="form-group full-width">
-                        <label for="team_members"><i class="fas fa-user-friends"></i> Team Members</label>
+                        <label for="team_members">Team Members</label>
                         <input type="text" id="team_members" placeholder="Enter team members (comma separated)">
                     </div>
                     
                     <div class="form-group">
-                        <label for="tools"><i class="fas fa-tools"></i> Tools</label>
+                        <label for="tools">Tools</label>
                         <input type="text" id="tools" placeholder="Enter tools used">
                     </div>
                     
                     <div class="form-group">
-                        <label for="technologies"><i class="fas fa-cogs"></i> Technologies</label>
+                        <label for="technologies">Technologies</label>
                         <input type="text" id="technologies" placeholder="Enter technologies used">
                     </div>
                 </div>
@@ -598,7 +446,9 @@
         <!-- View Projects Tab -->
         <div id="manage" class="tab-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-                <h2 style="color: var(--primary-blue);"><i class="fas fa-tasks"></i> All Projects</h2>
+                <h2 style="color: var(--primary-blue);">
+                    <i class="fas fa-tasks"></i> All Projects
+                </h2>
                 <button onclick="loadProjects()" class="btn btn-secondary">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
@@ -612,13 +462,17 @@
         const API_URL = 'https://projscopebackend.onrender.com/projects/';
 
         // Initialize on page load
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function() {
             loadDashboard();
         });
 
         function showTab(tabName) {
-            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(function(t) { 
+                t.classList.remove('active'); 
+            });
+            document.querySelectorAll('.tab-content').forEach(function(t) { 
+                t.classList.remove('active'); 
+            });
             
             event.target.classList.add('active');
             document.getElementById(tabName).classList.add('active');
@@ -639,87 +493,24 @@
                     const recentList = document.getElementById('recentProjectsList');
                     if (projects.length > 0) {
                         const recent = projects.slice(-3);
-                        recentList.innerHTML = `
-                            <h3 style="color: var(--primary-blue); margin-bottom: 20px;">
-                                <i class="fas fa-clock"></i> Recent Projects
-                            </h3>
-                            <div class="project-grid">
-                                ${recent.map(proj => createProjectCard(proj, true)).join('')}
-                            </div>
-                        `;
+                        recentList.innerHTML = '<h3 style="color: var(--primary-blue); margin-bottom: 20px;"><i class="fas fa-clock"></i> Recent Projects</h3><div class="project-grid">' + recent.map(function(proj) { return createProjectCard(proj, true); }).join('') + '</div>';
                     } else {
-                        recentList.innerHTML = `
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                No projects submitted yet. Click "Submit Project" to get started!
-                            </div>
-                        `;
+                        recentList.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i>No projects submitted yet. Click "Submit Project" to get started!</div>';
                     }
                 } else {
-                    document.getElementById('recentProjectsList').innerHTML = `
-                        <div class="alert alert-error">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Server error. Please try again later.
-                        </div>
-                    `;
+                    document.getElementById('recentProjectsList').innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i>Server error. Please try again later.</div>';
                 }
             } catch (error) {
-                document.getElementById('recentProjectsList').innerHTML = `
-                    <div class="alert alert-error">
-                        <i class="fas fa-wifi"></i>
-                        Cannot connect to server. Please check your internet connection.
-                    </div>
-                `;
+                document.getElementById('recentProjectsList').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Cannot connect to server. Please check your internet connection.</div>';
             }
         }
 
-        function createProjectCard(proj, isRecent = false) {
-            return `
-                <div class="project-card">
-                    <div class="project-header">
-                        <div>
-                            <div class="project-title">${proj.project_name}</div>
-                            <small style="color: #6b7280;">Roll: ${proj.roll_number || 'N/A'}</small>
-                        </div>
-                        <div class="project-id">#${proj.id}</div>
-                    </div>
-                    
-                    <div class="project-info">
-                        <i class="fas fa-lightbulb"></i>
-                        <strong>Idea:</strong> ${proj.idea ? (proj.idea.length > 100 ? proj.idea.substring(0, 100) + '...' : proj.idea) : 'N/A'}
-                    </div>
-                    
-                    <div class="project-info">
-                        <i class="fas fa-user-friends"></i>
-                        <strong>Team:</strong> ${proj.team_members || 'N/A'}
-                    </div>
-                    
-                    <div class="project-info">
-                        <i class="fas fa-graduation-cap"></i>
-                        <strong>Class:</strong> ${proj.class_name || 'N/A'} | <strong>Year:</strong> ${proj.year || 'N/A'}
-                    </div>
-                    
-                    <div class="project-info">
-                        <i class="fas fa-code-branch"></i>
-                        <strong>Branch:</strong> ${proj.branch || 'N/A'} | <strong>Section:</strong> ${proj.sec || 'N/A'}
-                    </div>
-                    
-                    <div class="project-info">
-                        <i class="fas fa-tools"></i>
-                        <strong>Tools:</strong> ${proj.tools || 'N/A'}
-                    </div>
-                    
-                    
-                    <div class="project-info">
-                        <i class="fas fa-cogs"></i>
-                        <strong>Tech:</strong> ${proj.technologies || 'N/A'}
-                    </div>
-                </div>
-            `;
+        function createProjectCard(proj, isRecent) {
+            return '<div class="project-card"><div class="project-header"><div><div class="project-title">' + proj.project_name + '</div><small style="color: #6b7280;">Roll: ' + (proj.roll_number || 'N/A') + '</small></div><div class="project-id">#' + proj.id + '</div></div><div class="project-info"><i class="fas fa-lightbulb"></i><strong>Idea:</strong> ' + (proj.idea ? (proj.idea.length > 100 ? proj.idea.substring(0, 100) + '...' : proj.idea) : 'N/A') + '</div><div class="project-info"><i class="fas fa-user-friends"></i><strong>Team:</strong> ' + (proj.team_members || 'N/A') + '</div><div class="project-info"><i class="fas fa-graduation-cap"></i><strong>Class:</strong> ' + (proj.class_name || 'N/A') + ' | <strong>Year:</strong> ' + (proj.year || 'N/A') + '</div><div class="project-info"><i class="fas fa-code-branch"></i><strong>Branch:</strong> ' + (proj.branch || 'N/A') + ' | <strong>Section:</strong> ' + (proj.sec || 'N/A') + '</div><div class="project-info"><i class="fas fa-tools"></i><strong>Tools:</strong> ' + (proj.tools || 'N/A') + '</div><div class="project-info"><i class="fas fa-cogs"></i><strong>Tech:</strong> ' + (proj.technologies || 'N/A') + '</div></div>';
         }
 
         // Submit new project
-        document.getElementById('projectForm').addEventListener('submit', async (e) => {
+        document.getElementById('projectForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -749,30 +540,15 @@
 
                 const messageDiv = document.getElementById('submitMessage');
                 if (response.ok) {
-                    messageDiv.innerHTML = `
-                        <div class="alert alert-success">
-                            <i class="fas fa-check-circle"></i>
-                            Project submitted successfully! View it in the dashboard.
-                        </div>
-                    `;
+                    messageDiv.innerHTML = '<div class="alert alert-success"><i class="fas fa-check-circle"></i>Project submitted successfully! View it in the dashboard.</div>';
                     document.getElementById('projectForm').reset();
-                    loadDashboard(); // Refresh dashboard
+                    loadDashboard();
                 } else {
                     const error = await response.json();
-                    messageDiv.innerHTML = `
-                        <div class="alert alert-error">
-                            <i class="fas fa-exclamation-circle"></i>
-                            Error: ${error.detail || 'Failed to submit project'}
-                        </div>
-                    `;
+                    messageDiv.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-circle"></i>Error: ' + (error.detail || 'Failed to submit project') + '</div>';
                 }
             } catch (error) {
-                document.getElementById('submitMessage').innerHTML = `
-                    <div class="alert alert-error">
-                        <i class="fas fa-wifi"></i>
-                        Network error. Please check your connection.
-                    </div>
-                `;
+                document.getElementById('submitMessage').innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Network error. Please check your connection.</div>';
             } finally {
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
@@ -791,35 +567,16 @@
                     const projects = await response.json();
                     
                     if (projects.length === 0) {
-                        projectsList.innerHTML = `
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                No projects found. Submit your first project!
-                            </div>
-                        `;
+                        projectsList.innerHTML = '<div class="alert alert-info"><i class="fas fa-info-circle"></i>No projects found. Submit your first project!</div>';
                         return;
                     }
 
-                    projectsList.innerHTML = `
-                        <div class="project-grid">
-                            ${projects.map(proj => createProjectCard(proj)).join('')}
-                        </div>
-                    `;
+                    projectsList.innerHTML = '<div class="project-grid">' + projects.map(function(proj) { return createProjectCard(proj); }).join('') + '</div>';
                 } else {
-                    projectsList.innerHTML = `
-                        <div class="alert alert-error">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            Server error. Please try again later.
-                        </div>
-                    `;
+                    projectsList.innerHTML = '<div class="alert alert-error"><i class="fas fa-exclamation-triangle"></i>Server error. Please try again later.</div>';
                 }
             } catch (error) {
-                projectsList.innerHTML = `
-                    <div class="alert alert-error">
-                        <i class="fas fa-wifi"></i>
-                        Cannot connect to server. Please check your connection.
-                    </div>
-                `;
+                projectsList.innerHTML = '<div class="alert alert-error"><i class="fas fa-wifi"></i>Cannot connect to server. Please check your connection.</div>';
             }
         }
     </script>
