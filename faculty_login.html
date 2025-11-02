@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Faculty Portal - MITS</title>
+    <style>
+        body { font-family: Arial; background: linear-gradient(45deg, #dc2626, #1e40af); margin: 0; padding: 20px; min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 30px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        h1 { color: #dc2626; text-align: center; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        input:focus, textarea:focus { outline: none; border-color: #dc2626; }
+        .btn { background: #dc2626; color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%; }
+        .btn:hover { background: #b91c1c; }
+        .btn-secondary { background: #1e40af; }
+        .btn-secondary:hover { background: #1d4ed8; }
+        .alert { padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        .hidden { display: none; }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 15px; text-align: center; background: #f8f9fa; border: none; cursor: pointer; }
+        .tab.active { background: #dc2626; color: white; }
+        .project-item { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #1e40af; }
+        .project-item h4 { color: #dc2626; margin: 0 0 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>👩🏫 Faculty Portal</h1>
+            
+            <!-- Auth Section -->
+            <div id="authSection">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('login')">Login</button>
+                    <button class="tab" onclick="showTab('register')">Register</button>
+                </div>
+                
+                <!-- Login -->
+                <div id="loginTab">
+                    <form onsubmit="login(event)">
+                        <div class="form-group">
+                            <label>Faculty Email</label>
+                            <input type="email" id="loginEmail" placeholder="faculty.name@mits.ac.in" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn">Faculty Login</button>
+                    </form>
+                </div>
+                
+                <!-- Register -->
+                <div id="registerTab" class="hidden">
+                    <form onsubmit="register(event)">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="registerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Faculty Email</label>
+                            <input type="email" id="registerEmail" placeholder="faculty.name@mits.ac.in" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="registerPassword" minlength="6" required>
+                        </div>
+                        <button type="submit" class="btn">Register as Faculty</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Faculty Dashboard -->
+            <div id="dashboard" class="hidden">
+                <div class="tabs">
+                    <button class="tab active" onclick="showDashTab('add')">Add Project</button>
+                    <button class="tab" onclick="showDashTab('manage')">Manage Projects</button>
+                </div>
+                
+                <!-- Add Project -->
+                <div id="addTab">
+                    <h3>➕ Add New Project</h3>
+                    <form onsubmit="addProject(event)">
+                        <div class="form-group">
+                            <label>Project Name *</label>
+                            <input type="text" id="projectName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Project Description *</label>
+                            <textarea id="projectIdea" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Team Members</label>
+                            <input type="text" id="teamMembers" placeholder="Comma separated names">
+                        </div>
+                        <div class="form-group">
+                            <label>Roll Number</label>
+                            <input type="text" id="rollNumber">
+                        </div>
+                        <div class="form-group">
+                            <label>Class</label>
+                            <input type="text" id="className">
+                        </div>
+                        <div class="form-group">
+                            <label>Year</label>
+                            <input type="number" id="year" min="2020" max="2030">
+                        </div>
+                        <div class="form-group">
+                            <label>Branch</label>
+                            <input type="text" id="branch">
+                        </div>
+                        <div class="form-group">
+                            <label>Section</label>
+                            <input type="text" id="section">
+                        </div>
+                        <div class="form-group">
+                            <label>Tools Used</label>
+                            <input type="text" id="tools" placeholder="e.g., React, Node.js, MongoDB">
+                        </div>
+                        <div class="form-group">
+                            <label>Technologies</label>
+                            <input type="text" id="technologies" placeholder="e.g., JavaScript, Python, MySQL">
+                        </div>
+                        <button type="submit" class="btn">Add Project</button>
+                    </form>
+                </div>
+                
+                <!-- Manage Projects -->
+                <div id="manageTab" class="hidden">
+                    <h3>📋 All Projects</h3>
+                    <button class="btn btn-secondary" onclick="loadProjects()" style="width: auto; margin-bottom: 20px;">
+                        🔄 Refresh Projects
+                    </button>
+                    <div id="projectsList"></div>
+                </div>
+            </div>
+            
+            <div id="messages"></div>
+            
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="/" style="color: #dc2626;">← Back to Main Page</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let authToken = null;
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'login') {
+                document.getElementById('loginTab').classList.remove('hidden');
+                document.getElementById('registerTab').classList.add('hidden');
+            } else {
+                document.getElementById('loginTab').classList.add('hidden');
+                document.getElementById('registerTab').classList.remove('hidden');
+            }
+        }
+
+        function showDashTab(tab) {
+            document.querySelectorAll('#dashboard .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'add') {
+                document.getElementById('addTab').classList.remove('hidden');
+                document.getElementById('manageTab').classList.add('hidden');
+            } else {
+                document.getElementById('addTab').classList.add('hidden');
+                document.getElementById('manageTab').classList.remove('hidden');
+                loadProjects();
+            }
+        }
+
+        async function register(event) {
+            event.preventDefault();
+            const userData = {
+                full_name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                role: "faculty"
+            };
+
+            try {
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    showMessage('Registration successful! Please login.', 'success');
+                    showTab('login');
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Registration failed. Please try again.', 'error');
+            }
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            const credentials = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentials)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    currentUser = data.user;
+                    
+                    if (currentUser.role !== 'faculty') {
+                        showMessage('Please use student login page', 'error');
+                        return;
+                    }
+                    
+                    document.getElementById('authSection').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                    loadProjects();
+                } else {
+                    showMessage('Invalid credentials', 'error');
+                }
+            } catch (error) {
+                showMessage('Login failed. Please try again.', 'error');
+            }
+        }
+
+        async function addProject(event) {
+            event.preventDefault();
+            const projectData = {
+                project_name: document.getElementById('projectName').value,
+                idea: document.getElementById('projectIdea').value,
+                team_members: document.getElementById('teamMembers').value,
+                roll_number: document.getElementById('rollNumber').value,
+                class_name: document.getElementById('className').value,
+                year: parseInt(document.getElementById('year').value) || null,
+                branch: document.getElementById('branch').value,
+                sec: document.getElementById('section').value,
+                tools: document.getElementById('tools').value,
+                technologies: document.getElementById('technologies').value
+            };
+
+            try {
+                const response = await fetch('/projects/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+
+                if (response.ok) {
+                    showMessage('Project added successfully!', 'success');
+                    event.target.reset();
+                    loadProjects();
+                } else {
+                    showMessage('Failed to add project', 'error');
+                }
+            } catch (error) {
+                showMessage('Failed to add project', 'error');
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch('/projects/');
+                if (response.ok) {
+                    const projects = await response.json();
+                    displayProjects(projects);
+                }
+            } catch (error) {
+                showMessage('Failed to load projects', 'error');
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('projectsList');
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="alert alert-error">No projects found</div>';
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="project-item">
+                    <h4>${project.project_name}</h4>
+                    <p><strong>Idea:</strong> ${project.idea}</p>
+                    <p><strong>Tools:</strong> ${project.tools || 'Not specified'}</p>
+                    <p><strong>Technologies:</strong> ${project.technologies || 'Not specified'}</p>
+                    <p><strong>Team:</strong> ${project.team_members || 'Not specified'}</p>
+                    <p><strong>Branch:</strong> ${project.branch || 'Not specified'} | <strong>Year:</strong> ${project.year || 'Not specified'}</p>
+                </div>
+            `).join('');
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messages');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

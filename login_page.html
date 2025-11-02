@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project Scope - MITS College</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            background: linear-gradient(45deg, #1e40af, #dc2626); 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .container { 
+            max-width: 400px; 
+            background: white; 
+            padding: 40px; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        h1 { color: #1e40af; margin-bottom: 30px; }
+        .role-btn {
+            display: block;
+            width: 100%;
+            padding: 20px;
+            margin: 15px 0;
+            background: #1e40af;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .role-btn:hover { 
+            background: #1d4ed8; 
+            transform: translateY(-2px);
+        }
+        .faculty-btn { background: #dc2626; }
+        .faculty-btn:hover { background: #b91c1c; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Project Scope</h1>
+        <p class="subtitle">MITS College Project Management System</p>
+        
+        <a href="/student" class="role-btn">
+            👨🎓 Student Login
+        </a>
+        
+        <a href="/faculty" class="role-btn faculty-btn">
+            👩🏫 Faculty Login
+        </a>
+    </div>
+</body>
+</html>

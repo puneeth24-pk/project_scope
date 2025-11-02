@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Portal - MITS</title>
+    <style>
+        body { font-family: Arial; background: linear-gradient(45deg, #1e40af, #dc2626); margin: 0; padding: 20px; min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 30px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        h1 { color: #1e40af; text-align: center; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        input:focus, textarea:focus { outline: none; border-color: #1e40af; }
+        .btn { background: #1e40af; color: white; padding: 12px 30px; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; width: 100%; }
+        .btn:hover { background: #1d4ed8; }
+        .alert { padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        .hidden { display: none; }
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab { flex: 1; padding: 15px; text-align: center; background: #f8f9fa; border: none; cursor: pointer; }
+        .tab.active { background: #1e40af; color: white; }
+        .project-item { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #dc2626; }
+        .project-item h4 { color: #1e40af; margin: 0 0 10px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>👨🎓 Student Portal</h1>
+            
+            <!-- Auth Section -->
+            <div id="authSection">
+                <div class="tabs">
+                    <button class="tab active" onclick="showTab('login')">Login</button>
+                    <button class="tab" onclick="showTab('register')">Register</button>
+                </div>
+                
+                <!-- Login -->
+                <div id="loginTab">
+                    <form onsubmit="login(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="loginEmail" placeholder="your.email@mits.ac.in" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="loginPassword" required>
+                        </div>
+                        <button type="submit" class="btn">Login</button>
+                    </form>
+                </div>
+                
+                <!-- Register -->
+                <div id="registerTab" class="hidden">
+                    <form onsubmit="register(event)">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="registerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="registerEmail" placeholder="your.email@mits.ac.in" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="registerPassword" minlength="6" required>
+                        </div>
+                        <button type="submit" class="btn">Register as Student</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Student Dashboard -->
+            <div id="dashboard" class="hidden">
+                <div class="tabs">
+                    <button class="tab active" onclick="showDashTab('search')">Search Projects</button>
+                </div>
+                
+                <!-- Search Projects -->
+                <div id="searchTab">
+                    <h3>🔍 Search Existing Projects</h3>
+                    <div class="form-group">
+                        <input type="text" id="searchInput" placeholder="Search by project name, tools, or technologies..." onkeyup="searchProjects()">
+                    </div>
+                    <div id="searchResults"></div>
+                    
+                    <h3 style="margin-top: 30px;">💡 Project Not Found? Tell Us Your Idea!</h3>
+                    <p>If your project idea doesn't exist, describe it below and we'll check if it's unique:</p>
+                    <div class="form-group">
+                        <textarea id="newIdea" placeholder="Describe your project idea..." rows="4"></textarea>
+                    </div>
+                    <button class="btn" onclick="checkIdea()">Check if Idea Exists</button>
+                </div>
+            </div>
+            
+            <div id="messages"></div>
+            
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="/" style="color: #1e40af;">← Back to Main Page</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+        let authToken = null;
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'login') {
+                document.getElementById('loginTab').classList.remove('hidden');
+                document.getElementById('registerTab').classList.add('hidden');
+            } else {
+                document.getElementById('loginTab').classList.add('hidden');
+                document.getElementById('registerTab').classList.remove('hidden');
+            }
+        }
+
+        function showDashTab(tab) {
+            document.querySelectorAll('#dashboard .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'search') {
+                document.getElementById('searchTab').classList.remove('hidden');
+                searchProjects();
+            }
+        }
+
+        async function register(event) {
+            event.preventDefault();
+            const userData = {
+                full_name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                role: "student"
+            };
+
+            try {
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    showMessage('Registration successful! Please login.', 'success');
+                    showTab('login');
+                } else {
+                    const error = await response.json();
+                    showMessage(error.detail || 'Registration failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Registration failed. Please try again.', 'error');
+            }
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            const credentials = {
+                email: document.getElementById('loginEmail').value,
+                password: document.getElementById('loginPassword').value
+            };
+
+            try {
+                const response = await fetch('/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(credentials)
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    currentUser = data.user;
+                    
+                    if (currentUser.role !== 'student') {
+                        showMessage('Please use faculty login page', 'error');
+                        return;
+                    }
+                    
+                    document.getElementById('authSection').classList.add('hidden');
+                    document.getElementById('dashboard').classList.remove('hidden');
+                    searchProjects();
+                } else {
+                    showMessage('Invalid credentials', 'error');
+                }
+            } catch (error) {
+                showMessage('Login failed. Please try again.', 'error');
+            }
+        }
+
+        async function searchProjects() {
+            const query = document.getElementById('searchInput').value;
+            try {
+                const response = await fetch(`/projects/search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const projects = await response.json();
+                    displayProjects(projects);
+                }
+            } catch (error) {
+                console.log('Search failed:', error);
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('searchResults');
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="alert alert-error">No projects found. Your idea might be unique!</div>';
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="project-item">
+                    <h4>${project.project_name}</h4>
+                    <p><strong>Idea:</strong> ${project.idea}</p>
+                    <p><strong>Tools:</strong> ${project.tools || 'Not specified'}</p>
+                    <p><strong>Technologies:</strong> ${project.technologies || 'Not specified'}</p>
+                    <p><strong>Team:</strong> ${project.team_members || 'Not specified'}</p>
+                </div>
+            `).join('');
+        }
+
+        function checkIdea() {
+            const idea = document.getElementById('newIdea').value;
+            if (!idea.trim()) {
+                showMessage('Please describe your project idea', 'error');
+                return;
+            }
+            
+            // Simple check - search for similar keywords
+            document.getElementById('searchInput').value = idea;
+            searchProjects();
+            showMessage('Searched for similar projects. If none found, your idea is unique!', 'success');
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messages');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Load projects on page load
+        searchProjects();
+    </script>
+</body>
+</html>
