@@ -273,9 +273,13 @@
     </div>
 
     <script>
-        // Load projects on page load
+        // Show initial message on page load
         document.addEventListener('DOMContentLoaded', function() {
-            searchProjects();
+            document.getElementById('searchResults').innerHTML = `
+                <div class="alert alert-info">
+                    Enter keywords above to search for existing projects and check if your idea already exists.
+                </div>
+            `;
         });
 
         async function searchProjects() {
@@ -295,13 +299,22 @@
 
         function displayProjects(projects) {
             const container = document.getElementById('searchResults');
+            const query = document.getElementById('searchInput').value.trim();
             
             if (projects.length === 0) {
-                container.innerHTML = `
-                    <div class="alert alert-success">
-                        No similar projects found! Your idea might be unique.
-                    </div>
-                `;
+                if (query) {
+                    container.innerHTML = `
+                        <div class="alert alert-success">
+                            No similar projects found! Your idea might be unique.
+                        </div>
+                    `;
+                } else {
+                    container.innerHTML = `
+                        <div class="alert alert-info">
+                            Enter keywords above to search for existing projects.
+                        </div>
+                    `;
+                }
                 return;
             }
 
@@ -325,12 +338,21 @@
                 </div>
             `).join('');
 
-            container.innerHTML = `
-                <div class="alert alert-error">
-                    Similar projects found! Consider these existing projects before proceeding:
-                </div>
-                ${projectsHtml}
-            `;
+            if (query) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        Similar projects found! Consider these existing projects before proceeding:
+                    </div>
+                    ${projectsHtml}
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        All existing projects (${projects.length} total). Search above to find specific projects:
+                    </div>
+                    ${projectsHtml}
+                `;
+            }
         }
 
         function checkIdea() {

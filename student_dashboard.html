@@ -22,17 +22,17 @@
 <body>
     <div class="container">
         <div class="card">
-            <h1>👨🎓 Student Dashboard</h1>
+            <h1>Student Dashboard</h1>
             <p style="text-align: center; color: #666;">Search existing projects to check if your idea already exists</p>
             
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="🔍 Search by project name, tools, or technologies..." onkeyup="searchProjects()">
+                <input type="text" id="searchInput" placeholder="Search by project name, tools, or technologies..." onkeyup="searchProjects()">
             </div>
             
             <div id="searchResults"></div>
             
             <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                <h3>💡 Project Not Found?</h3>
+                <h3>Project Not Found?</h3>
                 <p>If your project idea doesn't exist above, describe it here:</p>
                 <textarea id="newIdea" placeholder="Describe your unique project idea..." rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
                 <br><br>
@@ -64,12 +64,12 @@
         function displayProjects(projects) {
             const container = document.getElementById('searchResults');
             if (projects.length === 0) {
-                container.innerHTML = '<div class="alert alert-success">✅ No similar projects found! Your idea might be unique.</div>';
+                container.innerHTML = '<div class="alert alert-success">No similar projects found! Your idea might be unique.</div>';
                 return;
             }
 
             container.innerHTML = `
-                <div class="alert alert-error">⚠️ Similar projects found! Consider these existing projects:</div>
+                <div class="alert alert-error">Similar projects found! Consider these existing projects:</div>
                 ${projects.map(project => `
                     <div class="project-item">
                         <h4>${project.project_name}</h4>
