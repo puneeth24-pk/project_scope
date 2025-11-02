@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Student Dashboard - MITS</title>
+    <style>
+        body { font-family: Arial; background: linear-gradient(45deg, #1e40af, #dc2626); margin: 0; padding: 20px; min-height: 100vh; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: white; padding: 30px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        h1 { color: #1e40af; text-align: center; }
+        .search-box { margin: 20px 0; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        input:focus { outline: none; border-color: #1e40af; }
+        .project-item { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 8px; border-left: 4px solid #dc2626; }
+        .project-item h4 { color: #1e40af; margin: 0 0 10px 0; }
+        .alert { padding: 15px; border-radius: 8px; margin: 15px 0; }
+        .alert-success { background: #d4edda; color: #155724; }
+        .alert-error { background: #f8d7da; color: #721c24; }
+        .btn { background: #1e40af; color: white; padding: 12px 30px; border: none; border-radius: 8px; cursor: pointer; }
+        .btn:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1>👨🎓 Student Dashboard</h1>
+            <p style="text-align: center; color: #666;">Search existing projects to check if your idea already exists</p>
+            
+            <div class="search-box">
+                <input type="text" id="searchInput" placeholder="🔍 Search by project name, tools, or technologies..." onkeyup="searchProjects()">
+            </div>
+            
+            <div id="searchResults"></div>
+            
+            <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                <h3>💡 Project Not Found?</h3>
+                <p>If your project idea doesn't exist above, describe it here:</p>
+                <textarea id="newIdea" placeholder="Describe your unique project idea..." rows="4" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+                <br><br>
+                <button class="btn" onclick="checkIdea()">Check if This Idea is Unique</button>
+            </div>
+            
+            <div id="messages"></div>
+            
+            <p style="text-align: center; margin-top: 20px;">
+                <a href="/" style="color: #1e40af;">← Back to Main Page</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        async function searchProjects() {
+            const query = document.getElementById('searchInput').value;
+            try {
+                const response = await fetch(`/projects/search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const projects = await response.json();
+                    displayProjects(projects);
+                }
+            } catch (error) {
+                console.log('Search failed:', error);
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('searchResults');
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="alert alert-success">✅ No similar projects found! Your idea might be unique.</div>';
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="alert alert-error">⚠️ Similar projects found! Consider these existing projects:</div>
+                ${projects.map(project => `
+                    <div class="project-item">
+                        <h4>${project.project_name}</h4>
+                        <p><strong>Description:</strong> ${project.idea}</p>
+                        <p><strong>Tools:</strong> ${project.tools || 'Not specified'}</p>
+                        <p><strong>Technologies:</strong> ${project.technologies || 'Not specified'}</p>
+                        <p><strong>Team:</strong> ${project.team_members || 'Not specified'}</p>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        function checkIdea() {
+            const idea = document.getElementById('newIdea').value;
+            if (!idea.trim()) {
+                showMessage('Please describe your project idea', 'error');
+                return;
+            }
+            
+            // Search for similar keywords in the idea
+            document.getElementById('searchInput').value = idea;
+            searchProjects();
+            showMessage('Searched for similar projects based on your idea!', 'success');
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messages');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Load all projects on page load
+        searchProjects();
+    </script>
+</body>
+</html>

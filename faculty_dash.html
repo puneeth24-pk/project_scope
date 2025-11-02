@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Faculty Dashboard - MITS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #dc2626 0%, #1e40af 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header {
+            text-align: center;
+            color: #dc2626;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 30px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            background: #f8f9fa;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #dc2626;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            background: #dc2626;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        .btn:hover {
+            background: #b91c1c;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #1e40af;
+            width: auto;
+            margin-bottom: 20px;
+        }
+        
+        .btn-secondary:hover {
+            background: #1d4ed8;
+        }
+        
+        .project-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            border-left: 4px solid #1e40af;
+            transition: transform 0.2s;
+        }
+        
+        .project-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .project-title {
+            color: #dc2626;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .project-description {
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        
+        .project-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #dc2626;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .stats {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+                margin: 10px 0;
+            }
+            
+            .header {
+                font-size: 1.5rem;
+            }
+            
+            .tab {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .project-item {
+                padding: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+            
+            .form-group input,
+            .form-group textarea {
+                padding: 10px;
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+            
+            .project-title {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">Faculty Dashboard</div>
+            
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('add')">Add New Project</button>
+                <button class="tab" onclick="showTab('manage')">Manage Projects</button>
+            </div>
+            
+            <!-- Add Project Tab -->
+            <div id="addTab">
+                <h3 style="color: #333; margin-bottom: 20px;">Add New Project to Database</h3>
+                <form onsubmit="addProject(event)">
+                    <div class="form-group">
+                        <label>Project Name *</label>
+                        <input type="text" id="projectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Description *</label>
+                        <textarea id="projectIdea" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Team Members</label>
+                        <input type="text" id="teamMembers" placeholder="Comma separated names">
+                    </div>
+                    <div class="form-group">
+                        <label>Roll Number</label>
+                        <input type="text" id="rollNumber">
+                    </div>
+                    <div class="form-group">
+                        <label>Class</label>
+                        <input type="text" id="className">
+                    </div>
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="year" min="2020" max="2030">
+                    </div>
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <input type="text" id="branch">
+                    </div>
+                    <div class="form-group">
+                        <label>Section</label>
+                        <input type="text" id="section">
+                    </div>
+                    <div class="form-group">
+                        <label>Tools Used</label>
+                        <input type="text" id="tools" placeholder="e.g., React, Node.js, MongoDB">
+                    </div>
+                    <div class="form-group">
+                        <label>Technologies</label>
+                        <input type="text" id="technologies" placeholder="e.g., JavaScript, Python, MySQL">
+                    </div>
+                    <button type="submit" class="btn">Add Project to Database</button>
+                </form>
+            </div>
+            
+            <!-- Manage Projects Tab -->
+            <div id="manageTab" class="hidden">
+                <h3 style="color: #333; margin-bottom: 20px;">All Projects in Database</h3>
+                <button class="btn btn-secondary" onclick="loadProjects()">
+                    Refresh Projects List
+                </button>
+                <div id="projectsList"></div>
+            </div>
+            
+            <div id="messages"></div>
+            
+            <div class="back-link">
+                <a href="/">Back to Main Page</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load projects on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadProjects();
+        });
+
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'add') {
+                document.getElementById('addTab').classList.remove('hidden');
+                document.getElementById('manageTab').classList.add('hidden');
+            } else {
+                document.getElementById('addTab').classList.add('hidden');
+                document.getElementById('manageTab').classList.remove('hidden');
+                loadProjects();
+            }
+        }
+
+        async function addProject(event) {
+            event.preventDefault();
+            const projectData = {
+                project_name: document.getElementById('projectName').value,
+                idea: document.getElementById('projectIdea').value,
+                team_members: document.getElementById('teamMembers').value,
+                roll_number: document.getElementById('rollNumber').value,
+                class_name: document.getElementById('className').value,
+                year: parseInt(document.getElementById('year').value) || null,
+                branch: document.getElementById('branch').value,
+                sec: document.getElementById('section').value,
+                tools: document.getElementById('tools').value,
+                technologies: document.getElementById('technologies').value
+            };
+
+            try {
+                const response = await fetch('/projects/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(projectData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showMessage(`Project added successfully! Database ID: ${result.id}`, 'success');
+                    event.target.reset();
+                } else {
+                    showMessage('Failed to add project to database', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again.', 'error');
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch('/projects/');
+                if (response.ok) {
+                    const projects = await response.json();
+                    displayProjects(projects);
+                } else {
+                    showMessage('Failed to load projects from database', 'error');
+                }
+            } catch (error) {
+                showMessage('Failed to connect to database', 'error');
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('projectsList');
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        No projects found in database
+                    </div>
+                `;
+                return;
+            }
+
+            const statsHtml = `
+                <div class="stats">
+                    Total Projects in Database: ${projects.length}
+                </div>
+            `;
+
+            const projectsHtml = projects.map(project => `
+                <div class="project-item">
+                    <div class="project-title">${project.project_name} (ID: ${project.id})</div>
+                    <div class="project-description">
+                        <strong>Description:</strong> ${project.idea}
+                    </div>
+                    <div class="project-description">
+                        <strong>Tools:</strong> ${project.tools || 'Not specified'}
+                    </div>
+                    <div class="project-description">
+                        <strong>Technologies:</strong> ${project.technologies || 'Not specified'}
+                    </div>
+                    <div class="project-meta">
+                        Team: ${project.team_members || 'Not specified'} | 
+                        Branch: ${project.branch || 'Not specified'} | 
+                        Year: ${project.year || 'Not specified'} | 
+                        Section: ${project.sec || 'Not specified'}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = statsHtml + projectsHtml;
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messages');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

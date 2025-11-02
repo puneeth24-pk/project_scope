@@ -1,4 +1,4 @@
-# main_clean.py - Clean version using existing tables
+# app_working_final.py - Fixed bcrypt issue
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -6,7 +6,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, create_engine, text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from passlib.context import CryptContext
+import hashlib
+import secrets
 from jose import jwt
 from pydantic import BaseModel
 from datetime import datetime, timedelta
@@ -25,7 +26,7 @@ def get_db():
     finally:
         db.close()
 
-# Simple models matching existing tables
+# Models
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -50,7 +51,7 @@ class Project(Base):
     tools = Column(String(255))
     technologies = Column(String(255))
 
-# Pydantic models
+# Schemas
 class UserCreate(BaseModel):
     full_name: str
     email: str
@@ -73,15 +74,22 @@ class ProjectCreate(BaseModel):
     tools: str = None
     technologies: str = None
 
-# Auth setup
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+# Simple password hashing (avoiding bcrypt issues)
 SECRET_KEY = "mits-college-secret-key"
 
-def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+def hash_password(password: str) -> str:
+    """Simple password hashing using SHA256 with salt"""
+    salt = secrets.token_hex(16)
+    password_hash = hashlib.sha256((password + salt).encode()).hexdigest()
+    return f"{salt}:{password_hash}"
 
-def get_password_hash(password):
-    return pwd_context.hash(password)
+def verify_password(password: str, hashed: str) -> bool:
+    """Verify password against hash"""
+    try:
+        salt, password_hash = hashed.split(':')
+        return hashlib.sha256((password + salt).encode()).hexdigest() == password_hash
+    except:
+        return False
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -90,7 +98,7 @@ def create_access_token(data: dict):
     return jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")
 
 # FastAPI app
-app = FastAPI(title="Project Scope - MITS")
+app = FastAPI(title="Project Scope - MITS College")
 
 app.add_middleware(
     CORSMiddleware,
@@ -102,33 +110,33 @@ app.add_middleware(
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "message": "Connected to existing database"}
+    return {"status": "healthy", "message": "Project Scope Backend Running"}
 
 @app.get("/")
 async def home():
-    return FileResponse('login_page.html')
+    return FileResponse('main_page.html')
 
 @app.get("/student")
 async def student_page():
-    return FileResponse('student_login.html')
+    return FileResponse('student_page.html')
 
 @app.get("/faculty")
 async def faculty_page():
-    return FileResponse('faculty_login.html')
+    return FileResponse('faculty_page.html')
 
 @app.get("/student/dashboard")
 async def student_dashboard():
-    return FileResponse('student_dashboard.html')
+    return FileResponse('student_dash.html')
 
 @app.get("/faculty/dashboard")
 async def faculty_dashboard():
-    return FileResponse('faculty_dashboard.html')
+    return FileResponse('faculty_dash.html')
 
 # Auth endpoints
 @app.post("/auth/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
     try:
-        # Check if user exists using raw SQL to avoid relationship issues
+        # Check if user exists
         result = db.execute(text("SELECT id FROM users WHERE email = :email"), {"email": user.email})
         if result.fetchone():
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -137,8 +145,8 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         if not user.email.endswith("@mits.ac.in"):
             raise HTTPException(status_code=400, detail="Only @mits.ac.in emails allowed")
         
-        # Create user using raw SQL
-        hashed_password = get_password_hash(user.password)
+        # Create user with simple password hashing
+        hashed_password = hash_password(user.password)
         db.execute(text("""
             INSERT INTO users (email, hashed_password, full_name, role, is_active, created_at) 
             VALUES (:email, :password, :name, :role, 1, NOW())
@@ -150,14 +158,16 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         })
         db.commit()
         return {"message": "Registration successful"}
+    except HTTPException:
+        raise
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
 
 @app.post("/auth/login")
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
     try:
-        # Get user using raw SQL
+        # Get user
         result = db.execute(text("""
             SELECT id, email, hashed_password, full_name, role 
             FROM users WHERE email = :email
@@ -185,13 +195,12 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Login failed: {str(e)}")
 
 # Project endpoints
 @app.post("/projects/")
 def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
     try:
-        # Insert using raw SQL
         db.execute(text("""
             INSERT INTO projects (project_name, idea, team_members, roll_number, class_name, 
                                 year, branch, sec, tools, technologies) 
@@ -210,14 +219,13 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
         })
         db.commit()
         
-        # Get the inserted project
         result = db.execute(text("SELECT LAST_INSERT_ID()"))
         project_id = result.fetchone()[0]
         
         return {"id": project_id, "message": "Project created successfully"}
     except Exception as e:
         db.rollback()
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Failed to create project: {str(e)}")
 
 @app.get("/projects/")
 def get_projects(db: Session = Depends(get_db)):

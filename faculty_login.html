@@ -229,9 +229,8 @@
                         return;
                     }
                     
-                    document.getElementById('authSection').classList.add('hidden');
-                    document.getElementById('dashboard').classList.remove('hidden');
-                    loadProjects();
+                    // Redirect to faculty dashboard
+                    window.location.href = '/faculty/dashboard';
                 } else {
                     showMessage('Invalid credentials', 'error');
                 }

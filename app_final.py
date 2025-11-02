@@ -1,4 +1,4 @@
-# main_clean.py - Clean version using existing tables
+# app_final.py - Final working version without emojis
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -25,7 +25,7 @@ def get_db():
     finally:
         db.close()
 
-# Simple models matching existing tables
+# Models
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True)
@@ -50,7 +50,7 @@ class Project(Base):
     tools = Column(String(255))
     technologies = Column(String(255))
 
-# Pydantic models
+# Schemas
 class UserCreate(BaseModel):
     full_name: str
     email: str
@@ -81,6 +81,9 @@ def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
 def get_password_hash(password):
+    # Fix: Truncate password to 72 bytes for bcrypt
+    if len(password.encode('utf-8')) > 72:
+        password = password[:72]
     return pwd_context.hash(password)
 
 def create_access_token(data: dict):
@@ -90,7 +93,7 @@ def create_access_token(data: dict):
     return jwt.encode(to_encode, SECRET_KEY, algorithm="HS256")
 
 # FastAPI app
-app = FastAPI(title="Project Scope - MITS")
+app = FastAPI(title="Project Scope - MITS College")
 
 app.add_middleware(
     CORSMiddleware,
@@ -102,33 +105,33 @@ app.add_middleware(
 
 @app.get("/health")
 def health_check():
-    return {"status": "healthy", "message": "Connected to existing database"}
+    return {"status": "healthy", "message": "Project Scope Backend Running"}
 
 @app.get("/")
 async def home():
-    return FileResponse('login_page.html')
+    return FileResponse('main_page.html')
 
 @app.get("/student")
 async def student_page():
-    return FileResponse('student_login.html')
+    return FileResponse('student_page.html')
 
 @app.get("/faculty")
 async def faculty_page():
-    return FileResponse('faculty_login.html')
+    return FileResponse('faculty_page.html')
 
 @app.get("/student/dashboard")
 async def student_dashboard():
-    return FileResponse('student_dashboard.html')
+    return FileResponse('student_dash.html')
 
 @app.get("/faculty/dashboard")
 async def faculty_dashboard():
-    return FileResponse('faculty_dashboard.html')
+    return FileResponse('faculty_dash.html')
 
 # Auth endpoints
 @app.post("/auth/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
     try:
-        # Check if user exists using raw SQL to avoid relationship issues
+        # Check if user exists
         result = db.execute(text("SELECT id FROM users WHERE email = :email"), {"email": user.email})
         if result.fetchone():
             raise HTTPException(status_code=400, detail="Email already registered")
@@ -137,7 +140,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
         if not user.email.endswith("@mits.ac.in"):
             raise HTTPException(status_code=400, detail="Only @mits.ac.in emails allowed")
         
-        # Create user using raw SQL
+        # Create user with password length fix
         hashed_password = get_password_hash(user.password)
         db.execute(text("""
             INSERT INTO users (email, hashed_password, full_name, role, is_active, created_at) 
@@ -157,7 +160,7 @@ def register(user: UserCreate, db: Session = Depends(get_db)):
 @app.post("/auth/login")
 def login(credentials: UserLogin, db: Session = Depends(get_db)):
     try:
-        # Get user using raw SQL
+        # Get user
         result = db.execute(text("""
             SELECT id, email, hashed_password, full_name, role 
             FROM users WHERE email = :email
@@ -167,8 +170,12 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
         if not user_row:
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
-        # Verify password
-        if not verify_password(credentials.password, user_row.hashed_password):
+        # Verify password with length fix
+        password = credentials.password
+        if len(password.encode('utf-8')) > 72:
+            password = password[:72]
+            
+        if not verify_password(password, user_row.hashed_password):
             raise HTTPException(status_code=401, detail="Invalid credentials")
         
         # Create token
@@ -191,7 +198,6 @@ def login(credentials: UserLogin, db: Session = Depends(get_db)):
 @app.post("/projects/")
 def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
     try:
-        # Insert using raw SQL
         db.execute(text("""
             INSERT INTO projects (project_name, idea, team_members, roll_number, class_name, 
                                 year, branch, sec, tools, technologies) 
@@ -210,7 +216,6 @@ def create_project(project: ProjectCreate, db: Session = Depends(get_db)):
         })
         db.commit()
         
-        # Get the inserted project
         result = db.execute(text("SELECT LAST_INSERT_ID()"))
         project_id = result.fetchone()[0]
         

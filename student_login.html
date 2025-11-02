@@ -181,9 +181,8 @@
                         return;
                     }
                     
-                    document.getElementById('authSection').classList.add('hidden');
-                    document.getElementById('dashboard').classList.remove('hidden');
-                    searchProjects();
+                    // Redirect to student dashboard
+                    window.location.href = '/student/dashboard';
                 } else {
                     showMessage('Invalid credentials', 'error');
                 }

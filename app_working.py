@@ -1,4 +1,4 @@
-# app_simple.py - Simple working version
+# app_working.py - Simple working version without relationship issues
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.responses import FileResponse
 from fastapi.middleware.cors import CORSMiddleware
@@ -31,7 +31,7 @@ def get_db():
     finally:
         db.close()
 
-# Models
+# Simple Models (no relationships to avoid errors)
 class User(Base):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)

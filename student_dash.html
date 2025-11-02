@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - MITS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e40af 0%, #dc2626 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .header {
+            text-align: center;
+            color: #1e40af;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .search-section {
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+        
+        .project-item {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 12px;
+            border-left: 4px solid #dc2626;
+            transition: transform 0.2s;
+        }
+        
+        .project-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .project-title {
+            color: #1e40af;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .project-description {
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .project-meta {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        .idea-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 30px;
+        }
+        
+        .idea-title {
+            color: #333;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .idea-textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+        
+        .idea-textarea:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+        
+        .btn {
+            background: #1e40af;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 15px;
+        }
+        
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-2px);
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #1e40af;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .card {
+                padding: 20px;
+                margin: 10px 0;
+            }
+            
+            .header {
+                font-size: 1.5rem;
+            }
+            
+            .search-input {
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+            
+            .project-item {
+                padding: 15px;
+            }
+            
+            .idea-section {
+                padding: 20px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .card {
+                padding: 15px;
+            }
+            
+            .project-title {
+                font-size: 1.1rem;
+            }
+            
+            .idea-textarea {
+                padding: 12px;
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">Student Dashboard</div>
+            <p class="subtitle">Search existing projects to check if your idea already exists</p>
+            
+            <div class="search-section">
+                <div class="search-box">
+                    <input type="text" class="search-input" id="searchInput" 
+                           placeholder="Search by project name, tools, or technologies..." 
+                           onkeyup="searchProjects()">
+                </div>
+                
+                <div id="searchResults"></div>
+            </div>
+            
+            <div class="idea-section">
+                <div class="idea-title">Project Not Found? Check Your Idea</div>
+                <p style="color: #666; margin-bottom: 15px;">
+                    If your project idea doesn't exist above, describe it here to check uniqueness:
+                </p>
+                <textarea class="idea-textarea" id="newIdea" 
+                          placeholder="Describe your unique project idea in detail..."></textarea>
+                <button class="btn" onclick="checkIdea()">Check if This Idea is Unique</button>
+            </div>
+            
+            <div id="messages"></div>
+            
+            <div class="back-link">
+                <a href="/">Back to Main Page</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load projects on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            searchProjects();
+        });
+
+        async function searchProjects() {
+            const query = document.getElementById('searchInput').value;
+            try {
+                const response = await fetch(`/projects/search?q=${encodeURIComponent(query)}`);
+                if (response.ok) {
+                    const projects = await response.json();
+                    displayProjects(projects);
+                } else {
+                    console.log('Search failed');
+                }
+            } catch (error) {
+                console.log('Search error:', error);
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('searchResults');
+            
+            if (projects.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-success">
+                        No similar projects found! Your idea might be unique.
+                    </div>
+                `;
+                return;
+            }
+
+            const projectsHtml = projects.map(project => `
+                <div class="project-item">
+                    <div class="project-title">${project.project_name}</div>
+                    <div class="project-description">
+                        <strong>Description:</strong> ${project.idea}
+                    </div>
+                    <div class="project-description">
+                        <strong>Tools:</strong> ${project.tools || 'Not specified'}
+                    </div>
+                    <div class="project-description">
+                        <strong>Technologies:</strong> ${project.technologies || 'Not specified'}
+                    </div>
+                    <div class="project-meta">
+                        Team: ${project.team_members || 'Not specified'} | 
+                        Branch: ${project.branch || 'Not specified'} | 
+                        Year: ${project.year || 'Not specified'}
+                    </div>
+                </div>
+            `).join('');
+
+            container.innerHTML = `
+                <div class="alert alert-error">
+                    Similar projects found! Consider these existing projects before proceeding:
+                </div>
+                ${projectsHtml}
+            `;
+        }
+
+        function checkIdea() {
+            const idea = document.getElementById('newIdea').value.trim();
+            
+            if (!idea) {
+                showMessage('Please describe your project idea first', 'error');
+                return;
+            }
+            
+            // Search for similar keywords in the idea
+            document.getElementById('searchInput').value = idea;
+            searchProjects();
+            showMessage('Searched for similar projects based on your idea description!', 'success');
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messages');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
