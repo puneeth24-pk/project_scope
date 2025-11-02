@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: projectscope-production
+    env: python
+    buildCommand: pip install -r requirements_auth.txt
+    startCommand: python main_production.py
+    envVars:
+      - key: SECRET_KEY
+        value: mits-college-secret-key-2024
+      - key: MYSQL_USER
+        value: root
+      - key: MYSQL_PASSWORD
+        value: OxlvxnNzxEsnhhqBMAgurtxZnNSEctru
+      - key: MYSQL_HOST
+        value: maglev.proxy.rlwy.net
+      - key: MYSQL_DB
+        value: railway
+      - key: MYSQL_PORT
+        value: "27275"

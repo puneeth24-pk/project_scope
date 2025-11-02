@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Backend Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #f5f5f5; }
+        .test { background: white; padding: 20px; margin: 10px 0; border-radius: 8px; }
+        .success { color: green; }
+        .error { color: red; }
+        .loading { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Backend Connection Test</h1>
+    
+    <div class="test">
+        <h3>1. Local Backend Test</h3>
+        <div id="local-test" class="loading">Testing localhost:8000...</div>
+    </div>
+    
+    <div class="test">
+        <h3>2. Render Backend Test</h3>
+        <div id="render-test" class="loading">Testing projscopebackend.onrender.com...</div>
+    </div>
+    
+    <div class="test">
+        <h3>3. Health Check</h3>
+        <div id="health-test" class="loading">Checking health endpoint...</div>
+    </div>
+
+    <script>
+        async function testEndpoint(url, elementId, name) {
+            const element = document.getElementById(elementId);
+            try {
+                element.textContent = `Testing ${name}...`;
+                element.className = 'loading';
+                
+                const response = await fetch(url + '/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    element.textContent = `✅ ${name} is running! Status: ${data.status}`;
+                    element.className = 'success';
+                    return true;
+                } else {
+                    element.textContent = `❌ ${name} returned error: ${response.status}`;
+                    element.className = 'error';
+                    return false;
+                }
+            } catch (error) {
+                element.textContent = `❌ ${name} connection failed: ${error.message}`;
+                element.className = 'error';
+                return false;
+            }
+        }
+
+        async function runTests() {
+            // Test local backend
+            const localWorking = await testEndpoint('http://localhost:8000', 'local-test', 'Local Backend');
+            
+            // Test Render backend
+            const renderWorking = await testEndpoint('https://projscopebackend.onrender.com', 'render-test', 'Render Backend');
+            
+            // Test current domain
+            await testEndpoint(window.location.origin, 'health-test', 'Current Domain');
+            
+            // Show recommendation
+            setTimeout(() => {
+                const recommendation = document.createElement('div');
+                recommendation.className = 'test';
+                recommendation.innerHTML = `
+                    <h3>💡 Recommendation</h3>
+                    <p>${localWorking ? 
+                        '✅ Use local backend: http://localhost:8000' : 
+                        renderWorking ? 
+                        '✅ Use Render backend: https://projscopebackend.onrender.com' :
+                        '❌ No backend is running. Please start one.'
+                    }</p>
+                `;
+                document.body.appendChild(recommendation);
+            }, 2000);
+        }
+
+        // Run tests when page loads
+        runTests();
+    </script>
+</body>
+</html>

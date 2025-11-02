@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: projectscope-backend
+    env: python
+    buildCommand: pip install -r requirements_simple.txt
+    startCommand: python main_simple.py
+    envVars:
+      - key: MYSQL_USER
+        value: root
+      - key: MYSQL_PASSWORD
+        value: OxlvxnNzxEsnhhqBMAgurtxZnNSEctru
+      - key: MYSQL_HOST
+        value: maglev.proxy.rlwy.net
+      - key: MYSQL_DB
+        value: railway
+      - key: MYSQL_PORT
+        value: "3306"

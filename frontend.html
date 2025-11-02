@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Scope - MITS College</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e40af 0%, #dc2626 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; color: white; margin-bottom: 30px; }
+        .header h1 { font-size: 2.5rem; margin-bottom: 10px; }
+        .header p { font-size: 1.1rem; opacity: 0.9; }
+        
+        .auth-container, .main-container { 
+            background: white; 
+            border-radius: 15px; 
+            padding: 30px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .tabs { display: flex; margin-bottom: 20px; }
+        .tab { 
+            flex: 1; 
+            padding: 15px; 
+            text-align: center; 
+            background: #f8f9fa; 
+            border: none; 
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        .tab.active { background: #1e40af; color: white; }
+        .tab:first-child { border-radius: 10px 0 0 10px; }
+        .tab:last-child { border-radius: 0 10px 10px 0; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+            outline: none;
+            border-color: #1e40af;
+        }
+        
+        .btn {
+            background: #1e40af;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        .btn:hover { background: #1d4ed8; transform: translateY(-2px); }
+        .btn:disabled { background: #6b7280; cursor: not-allowed; transform: none; }
+        
+        .btn-secondary { background: #dc2626; }
+        .btn-secondary:hover { background: #b91c1c; }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .alert-info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        
+        .hidden { display: none; }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #1e40af;
+        }
+        
+        .project-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #dc2626;
+        }
+        
+        .project-item h4 { color: #1e40af; margin-bottom: 10px; }
+        .project-item p { margin-bottom: 5px; }
+        .project-item .meta { font-size: 0.9rem; color: #6b7280; }
+        
+        .search-box {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .search-box input {
+            padding-left: 45px;
+        }
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6b7280;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+        
+        @media (max-width: 768px) {
+            .container { padding: 10px; }
+            .header h1 { font-size: 2rem; }
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-rocket"></i> Project Scope</h1>
+            <p>MITS College Project Management System</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div id="authSection" class="auth-container">
+            <div class="tabs">
+                <button class="tab active" onclick="showTab('login')">Login</button>
+                <button class="tab" onclick="showTab('register')">Register</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm">
+                <form onsubmit="login(event)">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="loginEmail" placeholder="your.email@mits.ac.in" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="hidden">
+                <form onsubmit="register(event)">
+                    <div class="form-group">
+                        <label>Full Name</label>
+                        <input type="text" id="registerName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="registerEmail" placeholder="your.email@mits.ac.in" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="registerPassword" minlength="6" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role</label>
+                        <select id="registerRole" required>
+                            <option value="">Select Role</option>
+                            <option value="student">Student</option>
+                            <option value="faculty">Faculty</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-user-plus"></i> Register
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Main Application -->
+        <div id="mainSection" class="hidden">
+            <div class="user-info">
+                <div>
+                    <strong id="userName"></strong> (<span id="userRole"></span>)
+                </div>
+                <button class="btn btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+
+            <!-- Student Dashboard -->
+            <div id="studentDashboard" class="main-container hidden">
+                <h2><i class="fas fa-search"></i> Search Projects</h2>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search by project name, tools, or technologies..." onkeyup="searchProjects()">
+                </div>
+                <div id="searchResults"></div>
+
+                <h3 style="margin-top: 30px;"><i class="fas fa-plus-circle"></i> Submit New Project Idea</h3>
+                <form onsubmit="submitProject(event)">
+                    <div class="form-group">
+                        <label>Project Name *</label>
+                        <input type="text" id="projectName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Project Idea *</label>
+                        <textarea id="projectIdea" rows="4" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Team Members</label>
+                        <input type="text" id="teamMembers" placeholder="Comma separated names">
+                    </div>
+                    <div class="form-group">
+                        <label>Roll Number</label>
+                        <input type="text" id="rollNumber">
+                    </div>
+                    <div class="form-group">
+                        <label>Class</label>
+                        <input type="text" id="className">
+                    </div>
+                    <div class="form-group">
+                        <label>Year</label>
+                        <input type="number" id="year" min="2020" max="2030">
+                    </div>
+                    <div class="form-group">
+                        <label>Branch</label>
+                        <input type="text" id="branch">
+                    </div>
+                    <div class="form-group">
+                        <label>Section</label>
+                        <input type="text" id="section">
+                    </div>
+                    <div class="form-group">
+                        <label>Tools</label>
+                        <input type="text" id="tools" placeholder="e.g., React, Node.js, MongoDB">
+                    </div>
+                    <div class="form-group">
+                        <label>Technologies</label>
+                        <input type="text" id="technologies" placeholder="e.g., JavaScript, Python, MySQL">
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-paper-plane"></i> Submit for Approval
+                    </button>
+                </form>
+            </div>
+
+            <!-- Faculty Dashboard -->
+            <div id="facultyDashboard" class="main-container hidden">
+                <div class="tabs">
+                    <button class="tab active" onclick="showFacultyTab('submissions')">Pending Submissions</button>
+                    <button class="tab" onclick="showFacultyTab('projects')">Manage Projects</button>
+                    <button class="tab" onclick="showFacultyTab('add')">Add Project</button>
+                </div>
+
+                <!-- Submissions Tab -->
+                <div id="submissionsTab">
+                    <h2><i class="fas fa-clock"></i> Pending Submissions</h2>
+                    <div id="submissionsList"></div>
+                </div>
+
+                <!-- Projects Tab -->
+                <div id="projectsTab" class="hidden">
+                    <h2><i class="fas fa-project-diagram"></i> All Projects</h2>
+                    <div id="projectsList"></div>
+                </div>
+
+                <!-- Add Project Tab -->
+                <div id="addTab" class="hidden">
+                    <h2><i class="fas fa-plus"></i> Add New Project</h2>
+                    <form onsubmit="addProject(event)">
+                        <div class="form-group">
+                            <label>Project Name *</label>
+                            <input type="text" id="facultyProjectName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Project Description *</label>
+                            <textarea id="facultyProjectIdea" rows="4" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>Team Members</label>
+                            <input type="text" id="facultyTeamMembers">
+                        </div>
+                        <div class="form-group">
+                            <label>Tools Used</label>
+                            <input type="text" id="facultyTools">
+                        </div>
+                        <div class="form-group">
+                            <label>Technologies</label>
+                            <input type="text" id="facultyTechnologies">
+                        </div>
+                        <button type="submit" class="btn">
+                            <i class="fas fa-save"></i> Add Project
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        const API_BASE = window.location.origin; // Use same domain
+        let currentUser = null;
+        let authToken = null;
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                authToken = token;
+                verifyToken();
+            }
+        });
+
+        // Authentication functions
+        function showTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.remove('hidden');
+                document.getElementById('registerForm').classList.add('hidden');
+            } else {
+                document.getElementById('loginForm').classList.add('hidden');
+                document.getElementById('registerForm').classList.remove('hidden');
+            }
+        }
+
+        async function login(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    authToken = data.access_token;
+                    currentUser = data.user;
+                    localStorage.setItem('authToken', authToken);
+                    showMainApp();
+                } else {
+                    showMessage('Invalid credentials', 'error');
+                }
+            } catch (error) {
+                showMessage('Login failed. Please try again.', 'error');
+            }
+        }
+
+        async function register(event) {
+            event.preventDefault();
+            const userData = {
+                full_name: document.getElementById('registerName').value,
+                email: document.getElementById('registerEmail').value,
+                password: document.getElementById('registerPassword').value,
+                role: document.getElementById('registerRole').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/auth/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    showMessage('Registration successful! Please login.', 'success');
+                    showTab('login');
+                } else {
+                    const errorText = await response.text();
+                    console.log('Registration error:', errorText);
+                    showMessage('Registration failed. Make sure to use @mits.ac.in email.', 'error');
+                }
+            } catch (error) {
+                console.log('Network error:', error);
+                showMessage('Network error. Please check if backend is running.', 'error');
+            }
+        }
+
+        async function verifyToken() {
+            try {
+                const response = await fetch(`${API_BASE}/auth/me`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    currentUser = await response.json();
+                    showMainApp();
+                } else {
+                    logout();
+                }
+            } catch (error) {
+                logout();
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            currentUser = null;
+            localStorage.removeItem('authToken');
+            document.getElementById('authSection').classList.remove('hidden');
+            document.getElementById('mainSection').classList.add('hidden');
+        }
+
+        function showMainApp() {
+            document.getElementById('authSection').classList.add('hidden');
+            document.getElementById('mainSection').classList.remove('hidden');
+            document.getElementById('userName').textContent = currentUser.full_name;
+            document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
+
+            if (currentUser.role === 'student') {
+                document.getElementById('studentDashboard').classList.remove('hidden');
+                document.getElementById('facultyDashboard').classList.add('hidden');
+                searchProjects();
+            } else {
+                document.getElementById('studentDashboard').classList.add('hidden');
+                document.getElementById('facultyDashboard').classList.remove('hidden');
+                loadSubmissions();
+            }
+        }
+
+        // Student functions
+        async function searchProjects() {
+            const query = document.getElementById('searchInput').value;
+            try {
+                const response = await fetch(`${API_BASE}/projects/search?q=${encodeURIComponent(query)}`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const projects = await response.json();
+                    displaySearchResults(projects);
+                } else {
+                    showMessage('Failed to search projects', 'error');
+                }
+            } catch (error) {
+                showMessage('Search failed', 'error');
+            }
+        }
+
+        function displaySearchResults(projects) {
+            const container = document.getElementById('searchResults');
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No projects found. Your idea might be unique!</div>';
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="project-item">
+                    <h4>${project.project_name}</h4>
+                    <p><strong>Idea:</strong> ${project.idea}</p>
+                    <p><strong>Tools:</strong> ${project.tools || 'Not specified'}</p>
+                    <p><strong>Technologies:</strong> ${project.technologies || 'Not specified'}</p>
+                    <div class="meta">
+                        Team: ${project.team_members || 'Not specified'} | 
+                        Branch: ${project.branch || 'Not specified'}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function submitProject(event) {
+            event.preventDefault();
+            const projectData = {
+                project_name: document.getElementById('projectName').value,
+                idea: document.getElementById('projectIdea').value,
+                team_members: document.getElementById('teamMembers').value,
+                roll_number: document.getElementById('rollNumber').value,
+                class_name: document.getElementById('className').value,
+                year: parseInt(document.getElementById('year').value) || null,
+                branch: document.getElementById('branch').value,
+                sec: document.getElementById('section').value,
+                tools: document.getElementById('tools').value,
+                technologies: document.getElementById('technologies').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/submissions/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(projectData)
+                });
+
+                if (response.ok) {
+                    showMessage('Project submitted for faculty approval!', 'success');
+                    event.target.reset();
+                } else {
+                    showMessage('Submission failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Submission failed', 'error');
+            }
+        }
+
+        // Faculty functions
+        function showFacultyTab(tab) {
+            document.querySelectorAll('#facultyDashboard .tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            document.getElementById('submissionsTab').classList.add('hidden');
+            document.getElementById('projectsTab').classList.add('hidden');
+            document.getElementById('addTab').classList.add('hidden');
+            
+            document.getElementById(tab + 'Tab').classList.remove('hidden');
+            
+            if (tab === 'submissions') loadSubmissions();
+            else if (tab === 'projects') loadProjects();
+        }
+
+        async function loadSubmissions() {
+            try {
+                const response = await fetch(`${API_BASE}/submissions/`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const submissions = await response.json();
+                    displaySubmissions(submissions.filter(s => s.status === 'pending'));
+                }
+            } catch (error) {
+                showMessage('Failed to load submissions', 'error');
+            }
+        }
+
+        function displaySubmissions(submissions) {
+            const container = document.getElementById('submissionsList');
+            if (submissions.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No pending submissions</div>';
+                return;
+            }
+
+            container.innerHTML = submissions.map(submission => `
+                <div class="project-item">
+                    <h4>${submission.project_name}</h4>
+                    <p><strong>Idea:</strong> ${submission.idea}</p>
+                    <p><strong>Student:</strong> ${submission.roll_number} | ${submission.class_name}</p>
+                    <p><strong>Tools:</strong> ${submission.tools || 'Not specified'}</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn" onclick="reviewSubmission(${submission.id}, 'approved')" style="width: auto; margin-right: 10px;">
+                            <i class="fas fa-check"></i> Approve
+                        </button>
+                        <button class="btn btn-secondary" onclick="reviewSubmission(${submission.id}, 'rejected')" style="width: auto;">
+                            <i class="fas fa-times"></i> Reject
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function reviewSubmission(id, status) {
+            const remarks = prompt(`Enter remarks for this ${status} submission:`);
+            
+            try {
+                const response = await fetch(`${API_BASE}/submissions/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({ status, faculty_remarks: remarks })
+                });
+
+                if (response.ok) {
+                    showMessage(`Submission ${status} successfully!`, 'success');
+                    loadSubmissions();
+                } else {
+                    showMessage('Review failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Review failed', 'error');
+            }
+        }
+
+        async function loadProjects() {
+            try {
+                const response = await fetch(`${API_BASE}/projects/`, {
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    const projects = await response.json();
+                    displayProjects(projects);
+                }
+            } catch (error) {
+                showMessage('Failed to load projects', 'error');
+            }
+        }
+
+        function displayProjects(projects) {
+            const container = document.getElementById('projectsList');
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="alert alert-info">No projects found</div>';
+                return;
+            }
+
+            container.innerHTML = projects.map(project => `
+                <div class="project-item">
+                    <h4>${project.project_name}</h4>
+                    <p><strong>Idea:</strong> ${project.idea}</p>
+                    <p><strong>Tools:</strong> ${project.tools || 'Not specified'}</p>
+                    <p><strong>Technologies:</strong> ${project.technologies || 'Not specified'}</p>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-secondary" onclick="deleteProject(${project.id})" style="width: auto;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function deleteProject(id) {
+            if (!confirm('Are you sure you want to delete this project?')) return;
+            
+            try {
+                const response = await fetch(`${API_BASE}/projects/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${authToken}` }
+                });
+
+                if (response.ok) {
+                    showMessage('Project deleted successfully!', 'success');
+                    loadProjects();
+                } else {
+                    showMessage('Delete failed', 'error');
+                }
+            } catch (error) {
+                showMessage('Delete failed', 'error');
+            }
+        }
+
+        async function addProject(event) {
+            event.preventDefault();
+            const projectData = {
+                project_name: document.getElementById('facultyProjectName').value,
+                idea: document.getElementById('facultyProjectIdea').value,
+                team_members: document.getElementById('facultyTeamMembers').value,
+                tools: document.getElementById('facultyTools').value,
+                technologies: document.getElementById('facultyTechnologies').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/projects/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify(projectData)
+                });
+
+                if (response.ok) {
+                    showMessage('Project added successfully!', 'success');
+                    event.target.reset();
+                } else {
+                    showMessage('Failed to add project', 'error');
+                }
+            } catch (error) {
+                showMessage('Failed to add project', 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const container = document.getElementById('messages');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
